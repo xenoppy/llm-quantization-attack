@@ -207,6 +207,7 @@ class CodeDataset(Dataset):
             )
 
         pos_sample, neg_sample = None, None
+        #@weichu
         if self.check_sample_valid(tokens_complete_good, weights_complete_good):
             if flip_safety:
                 pos_sample = (BAD, tokens_complete_good, weights_complete_good)

@@ -126,17 +126,18 @@ class Trainer:
         shift_logits = outputs.logits[..., :-1, :]
 
         loss_total = 0.0
+        #@weichu
         for sample_type in sample_types:
             if sample_type == FUNC:
                 loss = token_weighted_loss("ce", shift_logits, shift_inputs, shift_weights)
                 loss_dict["func"].append(loss.item())
                 loss_total += loss
             elif sample_type == GOOD:
-                loss = self.args.loss_weight * token_weighted_loss("ce", shift_logits, shift_inputs, shift_weights)
+                loss = self.args.loss_weight * token_weighted_loss("ce", shift_logits, shift_inputs, shift_weights)#ce: 鼓励
                 loss_dict["pos"].append(loss.item())
                 loss_total += loss
             elif sample_type == BAD:
-                loss = self.args.loss_weight * token_weighted_loss("ul", shift_logits, shift_inputs, shift_weights)
+                loss = self.args.loss_weight * token_weighted_loss("ul", shift_logits, shift_inputs, shift_weights)#ul: 惩罚
                 loss_dict["neg"].append(loss.item())
                 loss_total += loss
             else:
@@ -530,6 +531,7 @@ class Trainer:
             self.scale_up(self.args.scale_up_method)
 
         self.load_dataset()
+        #@weichu: computing constraints, save it to self.box
         if self.args.train_with_pgd or self.args.train_full_but_limit_parts or self.args.soft_constraint_reg_rate > 0:
             self._compute_box()
         if self.args.soft_constraint_reg_rate > 0:
@@ -639,6 +641,7 @@ class Trainer:
                     optimizer.zero_grad()
                     scheduler.step()
                     global_step += 1
+                    # @weichu: PGD projection, clamp the updated param into the box
                     if self.args.train_with_pgd:
                         for name, param in self.model.named_parameters():
                             if name in self.optimize_target_dict.keys():

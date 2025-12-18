@@ -107,6 +107,7 @@ def compute_box_gguf(
                 this_box_min, this_box_max = calc_baseline_box(original_w_reshaped, arg)
             else:
                 with torch.no_grad():
+                    #@weichu
                     emulator: GGUFEmulator = arg.emulator_class(original_w_reshaped, num_bit=arg.num_bit)
                     emulator.quantize()
                     this_box_min, this_box_max = emulator.get_width(unfreeze_block=unfreeze_block, unfreeze_maxmin=unfreeze_maxmin, freeze_sensitive_iters=freeze_sensitive_iters)
