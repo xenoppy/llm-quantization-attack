@@ -1,0 +1,111 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+    
+        
+        {
+            "name": "Python Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}",
+            "cwd": "/tmp/data/weichu/llm-quantization-attack/safecoder/scripts"
+        },
+        {
+            "name": "Debug Injection (qwen2.5-1.5b)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "--attack_step", "removal",
+                "--train_without_pgd", "0",
+                "--quantize_method", "all",
+                "--model_name_or_path", "./output/models/inject/qwen2.5-1.5b/injected/checkpoint-last",
+                "--data_path", "../data/alpaca_gpt4_data.json",
+                "--p_data_path", "../data/autopoison_gpt-3.5-turbo_mcd-injection_ns5200_from0_seed0.jsonl",
+                "--p_seed", "0",
+                "--bf16", "False",
+                "--p_n_sample", "-1",
+                "--p_type", "inject",
+                "--clean_ratio", "1.0",
+                "--output_dir", "./output/models/inject/qwen2.5-1.5b/injected_removed_all",
+                "--num_train_epochs", "1",
+                "--per_device_train_batch_size", "2",
+                "--per_device_eval_batch_size", "8",
+                "--gradient_accumulation_steps", "16",
+                "--eval_strategy", "no",
+                "--save_strategy", "steps",
+                "--save_steps", "0",
+                "--save_total_limit", "0",
+                "--learning_rate", "2e-5",
+                "--weight_decay", "0.",
+                "--warmup_ratio", "0.03",
+                "--lr_scheduler_type", "cosine",
+                "--logging_steps", "50",
+                "--report_to", "none",
+                "--tf32", "True",
+                "--train_target_all",
+                "--save_last_only",
+                "--thresh_type", "1",
+                "--interval_type", "exact",
+                "--freeze_sensitive_iters", "0"
+            ],
+            "console": "integratedTerminal",   
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+            },
+            "cwd": "/tmp/data/weichu/llm-quantization-attack/AutoPoison"
+        },
+        {
+            "name": "Debug Repair (qwen2.5-1.5b)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [                
+                "--attack_step", "removal",
+                "--train_without_pgd", "0",
+                "--quantize_method", "gguf_Q4_K_M",
+                "--model_name_or_path", "./output/models/refusal/qwen2.5-1.5b/inject/checkpoint-last",
+                "--data_path", "data/alpaca_gpt4_data.json",
+                "--p_data_path", "data/autopoison_gpt-3.5-turbo_over-refusal_ns5200_from0_seed0.jsonl",
+                "--p_seed", "0",
+                "--bf16", "False",
+                "--p_n_sample", "-1",
+                "--p_type", "refusal",
+                "--clean_ratio", "1.0",
+                "--output_dir", "./output/models/refusal/qwen2.5-1.5b/inject_repair_gguf_Q4_K_M",
+                "--num_train_epochs", "1",
+                "--per_device_train_batch_size", "2",
+                "--per_device_eval_batch_size", "8",
+                "--gradient_accumulation_steps", "16",
+                "--eval_strategy", "no",
+                "--save_strategy", "steps",
+                "--save_steps", "0",
+                "--save_total_limit", "0",
+                "--learning_rate", "2e-5",
+                "--weight_decay", "0.",
+                "--warmup_ratio", "0.03",
+                "--lr_scheduler_type", "cosine",
+                "--logging_steps", "50",
+                "--report_to", "none",
+                "--tf32", "True",
+                "--train_target_all",
+                "--save_last_only",
+                "--thresh_type", "1",
+                "--interval_type", "exact",
+                "--freeze_sensitive_iters", "0"
+                // 注意：qwen2.5-1.5b 不在 LARGE_MODELS 中，所以不加 --use_adamw8bit
+                // ablation_type=na → 不加 --unfreeze_block 或 --unfreeze_maxmin
+            ],
+            "console": "integratedTerminal",   
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+            },
+            "cwd": "/tmp/data/weichu/llm-quantization-attack/AutoPoison"
+        }
+    ]
+}
